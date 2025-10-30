@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "32841765040",
+    "project_id": "bizipac-6bb00",
+    "storage_bucket": "bizipac-6bb00.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:32841765040:android:b166ec6833599ba2dc6b75",
+        "android_client_info": {
+          "package_name": "com.example.peckme"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-FMcDEPuYMHHHxiXn0OdMu-nKyC2HZpE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:32841765040:android:174e912a8c7a79ccdc6b75",
+        "android_client_info": {
+          "package_name": "com.example.project2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-FMcDEPuYMHHHxiXn0OdMu-nKyC2HZpE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
