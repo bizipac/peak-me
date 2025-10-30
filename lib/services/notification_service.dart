@@ -79,24 +79,67 @@ class NotificationService {
   //firebase init
   //jab hmari app working me rhegi tb ye notification kaam karegi
   void firebaseInit(BuildContext context) {
-    FirebaseMessaging.onMessage.listen((message) {
+    // Only listen once
+    FirebaseMessaging.onMessage.listen((message) async {
       RemoteNotification? notification = message.notification;
-      AndroidNotification? android = message.notification!.android;
-
       if (kDebugMode) {
-        print("notification title: ${notification!.title}");
-        print("notification body: ${notification!.body}");
+        print("notification title: ${notification?.title}");
+        print("notification body: ${notification?.body}");
       }
-      //ios
+
       if (Platform.isIOS) {
         iosForgroundMessage();
       }
-      //android
+
       if (Platform.isAndroid) {
-        initLocalNotification(context, message);
-        //handleMessage(context, message);
         showNotification(message);
+        await saveNotificationToFirebase(message);
       }
+    });
+  }
+
+  // Initialize local notifications only once
+  Future<void> initializeLocalNotificationsOnce() async {
+    var androidInitSettings = const AndroidInitializationSettings(
+      "@mipmap/ic_launcher",
+    );
+    var iosInitSettings = const DarwinInitializationSettings();
+    var initializationSettings = InitializationSettings(
+      android: androidInitSettings,
+      iOS: iosInitSettings,
+    );
+    await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
+  Future<void> saveNotificationToFirebase(RemoteMessage message) async {
+    String? mobile = await getMobile();
+    if (mobile == null || mobile.isEmpty) return;
+
+    // Use consistent ID for duplicate prevention
+    final msgId =
+        message.messageId ??
+        "${message.notification?.title}-${message.notification?.body}";
+
+    final ref = FirebaseFirestore.instance
+        .collection('message')
+        .doc(mobile)
+        .collection('notifications');
+
+    final existing = await ref.where('messageId', isEqualTo: msgId).get();
+    if (existing.docs.isNotEmpty) {
+      print('🔁 Skipping duplicate notification: $msgId');
+      return;
+    }
+
+    await ref.add({
+      'messageId': msgId,
+      'title': message.notification?.title ?? '',
+      'body': message.notification?.body ?? '',
+      'sentTime':
+          message.sentTime?.toIso8601String() ??
+          DateTime.now().toIso8601String(),
+      'status': 'unread',
+      'mutableContent': message.mutableContent ?? false,
     });
   }
 
@@ -172,21 +215,7 @@ class NotificationService {
     BuildContext context,
     RemoteMessage message,
   ) async {
-    String? mobile = await getMobile();
-
-    await FirebaseFirestore.instance
-        .collection('message')
-        .doc(mobile)
-        .collection('notifications')
-        .add({
-          'title': message.notification?.title ?? '',
-          'body': message.notification?.body ?? '',
-          'sentTime':
-              message.sentTime?.toIso8601String() ??
-              DateTime.now().toIso8601String(),
-          'status': 'unread', // default status
-          'mutableContent': message.mutableContent ?? false,
-        });
+    await saveNotificationToFirebase(message);
     Get.to(() => GetNotificationScreen());
     //Get.to(() => DashboardScreen());
   }
