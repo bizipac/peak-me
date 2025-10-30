@@ -174,8 +174,8 @@ Future<String?> uploadPdfToS3({
   final s3 = S3(
     region: region,
     credentials: AwsClientCredentials(
-      accessKey: "AKIAS36GUUCJB2TFSZQJ",
-      secretKey: "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",
+      accessKey: "--------------------------------",
+      secretKey: "--------------------------------",
     ),
   );
 
@@ -343,3 +343,4 @@ Future<String> _getCurrentLocation() async {
 
   return "${position.latitude},${position.longitude}";
 }
+
