@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -37,6 +38,32 @@ class _LoginState extends State<Login> {
   bool _obscurePassword = true;
 
   String _deviceInfo = '';
+  bool isButtonDisabled = false;
+  int countdown = 0;
+
+  void handleLoginTap() {
+    if (_formKey.currentState!.validate()) {
+      requestOtp();
+      setState(() {
+        isButtonDisabled = true;
+        countdown = 30; // 30 seconds
+      });
+
+      // Start countdown timer
+      Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (countdown == 0) {
+          timer.cancel();
+          setState(() {
+            isButtonDisabled = false;
+          });
+        } else {
+          setState(() {
+            countdown--;
+          });
+        }
+      });
+    }
+  }
 
   //genrate otp
   String genrateOtp() {
@@ -303,9 +330,8 @@ class _LoginState extends State<Login> {
                               ),
                             ),
                             SizedBox(height: 10),
-
-                            //Text("Device ID: ${_deviceInfo.toString()}"),
-                            //Text("Public IP: $_publicIp"),
+                            // Text("Device ID: ${_deviceInfo.toString()}"),
+                            // Text("Public IP: $_publicIp"),
                             Divider(thickness: 2, height: 40),
                             Row(
                               children: [
@@ -426,22 +452,22 @@ class _LoginState extends State<Login> {
                             ),
                             SizedBox(height: 10),
                             InkWell(
-                              onTap: () async {
-                                if (_formKey.currentState!.validate()) {
-                                  requestOtp();
-                                } else {}
-                              },
+                              onTap: isButtonDisabled ? null : handleLoginTap,
                               child: Container(
                                 height: 50,
                                 width: 330,
                                 decoration: BoxDecoration(
-                                  color: AppConstant.darkButton,
+                                  color: isButtonDisabled
+                                      ? Colors
+                                            .grey // Disabled color
+                                      : AppConstant.darkButton,
                                   borderRadius: BorderRadius.circular(10),
                                 ),
-
                                 child: Center(
                                   child: Text(
-                                    'Login',
+                                    isButtonDisabled
+                                        ? 'Wait ${countdown}s'
+                                        : 'Login',
                                     style: TextStyle(
                                       color: AppConstant.darkTextColor,
                                       fontSize: 16,

@@ -11,6 +11,8 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:peckme/services/save_complete_lead.dart';
 
+import '../handler/EncryptionHandler.dart';
+
 Future<String?> convertImageToPdfAndSave(
   File imageFile,
   String docname,
@@ -52,10 +54,10 @@ Future<String?> convertImageToPdfAndSave(
             ),
             // 🔹 Overlay Info
             pw.Positioned(
-              top: 20,
-              left: 10,
+              top: 450,
+              left: 250,
               child: pw.Opacity(
-                opacity: 0.8,
+                opacity: 0.5,
                 child: pw.Container(
                   padding: const pw.EdgeInsets.all(6),
                   color: PdfColors.black,
@@ -63,37 +65,37 @@ Future<String?> convertImageToPdfAndSave(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
                       pw.Text(
-                        'TO BE USED FOR : $clientName',
+                        'To be used for : $clientName',
                         style: pw.TextStyle(
-                          fontSize: 12,
+                          fontSize: 10,
+                          color: PdfColors.white,
+                        ),
+                      ),
+                      // pw.Text(
+                      //   'Doc Name : $documentId',
+                      //   style: pw.TextStyle(
+                      //     fontSize: 12,
+                      //     color: PdfColors.white,
+                      //   ),
+                      // ),
+                      pw.Text(
+                        '$userName',
+                        style: pw.TextStyle(
+                          fontSize: 10,
                           color: PdfColors.white,
                         ),
                       ),
                       pw.Text(
-                        'Doc Name : $documentId',
+                        '$latLongText',
                         style: pw.TextStyle(
-                          fontSize: 12,
+                          fontSize: 10,
                           color: PdfColors.white,
                         ),
                       ),
                       pw.Text(
-                        'Excutive Name : $userName',
+                        '${DateTime.now()}',
                         style: pw.TextStyle(
-                          fontSize: 12,
-                          color: PdfColors.white,
-                        ),
-                      ),
-                      pw.Text(
-                        'Location : $latLongText',
-                        style: pw.TextStyle(
-                          fontSize: 12,
-                          color: PdfColors.white,
-                        ),
-                      ),
-                      pw.Text(
-                        'DATE & TIME : ${DateTime.now()}',
-                        style: pw.TextStyle(
-                          fontSize: 12,
+                          fontSize: 10,
                           color: PdfColors.white,
                         ),
                       ),
@@ -174,8 +176,14 @@ Future<String?> uploadPdfToS3({
   final s3 = S3(
     region: region,
     credentials: AwsClientCredentials(
-      accessKey: "--------------------------------",
-      secretKey: "--------------------------------",
+      accessKey: decryptFMS(
+        "TohPtOvObC8NnBOp/1BM30tSr97U803JZ+gqI3Jf4uM=",
+        "QWRTEfnfdys635",
+      ),
+      secretKey: decryptFMS(
+        "Exz2WIEt2w1JRVZREvtIPeRX5Jti2p2mcHqs7Hh87/47BQidFAUAkLOxlzYFlctw",
+        "QWRTEfnfdys635",
+      ),
     ),
   );
 
@@ -343,4 +351,3 @@ Future<String> _getCurrentLocation() async {
 
   return "${position.latitude},${position.longitude}";
 }
-

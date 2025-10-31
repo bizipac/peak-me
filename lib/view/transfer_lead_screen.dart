@@ -48,7 +48,7 @@ class _TransferLeadScreenState extends State<TransferLeadScreen> {
       List<Lead> fetchedLeads = await receivedLeadController.fetchLeads(
         uid: uid,
         start: 0,
-        end: 10,
+        end: 1000,
         branchId: branchId,
         app_version: appVersion,
         appType: appType,

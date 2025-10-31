@@ -433,7 +433,7 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                         ? (constraints.maxWidth / 2) - 20
                                         : constraints.maxWidth,
                                     child: _infoText(
-                                      "Athena Lead Id",
+                                      "App No",
                                       lead.athenaLeadId,
                                     ),
                                   ),
@@ -508,60 +508,160 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                                         Navigator.pop(context),
                                                   ),
                                                 ),
-                                                _infoRow(
-                                                  "Emp Name",
-                                                  lead.empName,
-                                                ),
-                                                _infoRow(
-                                                  "Client Name",
-                                                  lead.clientName,
-                                                ),
-                                                _infoRow(
-                                                  "Product",
-                                                  lead.product,
-                                                ),
-                                                _infoRow("Source", lead.source),
-                                                _infoRow(
-                                                  "App Location",
-                                                  lead.appLoc,
-                                                ),
-                                                _infoRow(
-                                                  "Doc By Tc",
-                                                  lead.doc,
-                                                  maxLines: 5,
-                                                ),
-                                                _infoRow(
-                                                  "Account Holder",
-                                                  lead.accHolder,
-                                                ),
-                                                _infoRow(
-                                                  "Aadharcard",
-                                                  lead.aadharCard,
-                                                ),
-                                                _infoRow(
-                                                  "Athena Lead",
-                                                  lead.athenaLeadId,
-                                                ),
-                                                _infoRow("City", lead.city),
-                                                _infoRow(
-                                                  "Office Pin Code",
-                                                  lead.offPincode,
-                                                ),
-                                                _infoRow(
-                                                  "App Address",
-                                                  lead.appAdd,
-                                                  maxLines: 5,
-                                                ),
-                                                _infoRow(
-                                                  "Off Address",
-                                                  lead.offAddress,
-                                                  maxLines: 5,
-                                                ),
-                                                _infoRow(
-                                                  "Res Address",
-                                                  lead.resAddress,
-                                                  maxLines: 5,
-                                                ),
+                                                if (lead.empName != null &&
+                                                    lead.empName!.isNotEmpty)
+                                                  _infoRow(
+                                                    "Emp Name",
+                                                    lead.empName,
+                                                  ),
+                                                if (lead.clientName != null &&
+                                                    lead.clientName!.isNotEmpty)
+                                                  _infoRow(
+                                                    "Client Name",
+                                                    lead.clientName,
+                                                  ),
+                                                if (lead.product != null &&
+                                                    lead.product!.isNotEmpty)
+                                                  _infoRow(
+                                                    "Product",
+                                                    lead.product,
+                                                  ),
+                                                if (lead.source != null &&
+                                                    lead.source!.isNotEmpty)
+                                                  _infoRow(
+                                                    "Source",
+                                                    lead.source,
+                                                  ),
+                                                if (lead.appLoc != null &&
+                                                    lead.appLoc!.isNotEmpty)
+                                                  _infoRow(
+                                                    "App Location",
+                                                    lead.appLoc,
+                                                  ),
+                                                if (lead.productCode != null &&
+                                                    lead
+                                                        .productCode!
+                                                        .isNotEmpty)
+                                                  _infoRow(
+                                                    "Product code",
+                                                    lead.productCode,
+                                                    maxLines: 5,
+                                                  ),
+                                                if (lead.source2 != null &&
+                                                    lead.source2!.isNotEmpty)
+                                                  _infoRow(
+                                                    "Product Category",
+                                                    lead.source2,
+                                                    maxLines: 5,
+                                                  ),
+                                                if (lead.source3 != null &&
+                                                    lead.source3!.isNotEmpty)
+                                                  _infoRow(
+                                                    "Proxy No",
+                                                    lead.source3,
+                                                    maxLines: 5,
+                                                  ),
+                                                if (lead.formNo != null &&
+                                                    lead.formNo!.isNotEmpty)
+                                                  _infoRow(
+                                                    "Card No",
+                                                    lead.formNo,
+                                                    maxLines: 5,
+                                                  ),
+                                                if (lead.doc != null &&
+                                                    lead.doc!.isNotEmpty)
+                                                  _infoRow(
+                                                    "Doc By Tc",
+                                                    lead.doc,
+                                                    maxLines: 5,
+                                                  ),
+                                                if (lead.doc != null &&
+                                                    lead.doc!.isNotEmpty)
+                                                  _infoRow(
+                                                    "Doc By Tc",
+                                                    lead.doc,
+                                                    maxLines: 5,
+                                                  ),
+                                                if (lead.accHolder != null &&
+                                                    lead.accHolder!.isNotEmpty)
+                                                  _infoRow(
+                                                    "SIM No",
+                                                    lead.accHolder,
+                                                  ),
+                                                if (lead.aadharCard != null &&
+                                                    lead.aadharCard!.isNotEmpty)
+                                                  _infoRow(
+                                                    "Aadharcard",
+                                                    lead.aadharCard,
+                                                  ),
+                                                if (lead.athenaLeadId != null &&
+                                                    lead
+                                                        .athenaLeadId!
+                                                        .isNotEmpty)
+                                                  _infoRow(
+                                                    "App No",
+                                                    lead.athenaLeadId,
+                                                  ),
+                                                if (lead.appAdd != null &&
+                                                    lead.appAdd!.isNotEmpty)
+                                                  _infoRow(
+                                                    "App Add",
+                                                    lead.appAdd,
+                                                  ),
+                                                if (lead.secCode != null &&
+                                                    lead.secCode!.isNotEmpty)
+                                                  _infoRow(
+                                                    "Device Id ",
+                                                    lead.secCode,
+                                                  ),
+                                                if (lead.compName != null &&
+                                                    lead.compName!.isNotEmpty)
+                                                  _infoRow(
+                                                    "UPI Id",
+                                                    lead.compName,
+                                                  ),
+                                                if (lead.city != null &&
+                                                    lead.city!.isNotEmpty)
+                                                  _infoRow("City", lead.city),
+                                                if (lead.offPincode != null &&
+                                                    lead.offPincode!.isNotEmpty)
+                                                  _infoRow(
+                                                    "Office Pin Code",
+                                                    lead.offPincode,
+                                                  ),
+                                                if (lead.resPin != null &&
+                                                    lead.resPin!.isNotEmpty)
+                                                  _infoRow(
+                                                    "Res Pin Code",
+                                                    lead.resPin,
+                                                  ),
+                                                if (lead.location != null &&
+                                                    lead.location!.isNotEmpty)
+                                                  _infoRow(
+                                                    "Location",
+                                                    lead.location,
+                                                  ),
+                                                if (lead.appAdd != null &&
+                                                    lead.appAdd!.isNotEmpty)
+                                                  _infoRow(
+                                                    "App Address",
+                                                    lead.appAdd,
+                                                    maxLines: 5,
+                                                  ),
+                                                if (lead.offAddress != null &&
+                                                    lead.offAddress!.isNotEmpty)
+                                                  _infoRow(
+                                                    "Off Address",
+                                                    lead.offAddress,
+                                                    maxLines: 5,
+                                                  ),
+                                                if (lead.resAddress != null &&
+                                                    lead.resAddress!.isNotEmpty)
+                                                  _infoRow(
+                                                    "Res Address",
+                                                    lead.resAddress,
+                                                    maxLines: 5,
+                                                  ),
                                               ],
                                             ),
                                           ),
@@ -632,9 +732,9 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    'Transfer Lead',
+                                    'Assign Lead',
                                     style: TextStyle(
-                                      fontSize: 15,
+                                      fontSize: 14,
                                       color: AppConstant.iconColor,
                                     ),
                                   ),
@@ -676,17 +776,17 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  'Postponed',
+                                  'Assign for TC',
                                   style: TextStyle(
                                     color: AppConstant.darkButton,
-                                    fontSize: 15,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 SizedBox(width: 5),
                                 Icon(
                                   Icons.send,
-                                  size: 18,
+                                  size: 15,
                                   color: AppConstant.iconColor,
                                 ),
                               ],
@@ -714,17 +814,17 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  'Reflix',
+                                  'Re-schedule',
                                   style: TextStyle(
                                     color: AppConstant.iconColor,
-                                    fontSize: 15,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 SizedBox(width: 5),
                                 Icon(
                                   Icons.schedule_outlined,
-                                  size: 18,
+                                  size: 15,
                                   color: AppConstant.iconColor,
                                 ),
                               ],
@@ -771,7 +871,6 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                       gpslong: location_long,
                                     );
                                   },
-
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppConstant.whiteBackColor,
                                     shape: RoundedRectangleBorder(
@@ -787,14 +886,14 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                           'Start Biometrics',
                                           style: TextStyle(
                                             color: AppConstant.darkButton,
-                                            fontSize: 15,
+                                            fontSize: 14,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                         SizedBox(width: 5),
                                         Icon(
                                           Icons.fingerprint_outlined,
-                                          size: 18,
+                                          size: 15,
                                           color: AppConstant.iconColor,
                                         ),
                                       ],
@@ -802,44 +901,94 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                   ),
                                 )
                               : lead.clientId == "89"
-                              ? ElevatedButton(
-                                  onPressed: () {
-                                    // _launchInBrowser('https://fms.bizipac.com/apinew/secureapi/icici_pre_paid_card_gen.php?user_id=$user_id&branch_id=$branchId#!/');
-                                    _launchInBrowser(
-                                      'https://fms.bizipac.com/apinew/secureapi/icici_pre_paid_card_gen.php?user_id=$user_id&branch_id=$branchId&bizipac_lead_id=${lead.leadId}&client_lead_id=${lead.clientId}&latitude_val=19.3767643&longitude_val=19.3434545#!/',
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppConstant.whiteBackColor,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          'Add Details',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            color: AppConstant.darkButton,
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'impact',
+                              ? lead.serviceId == "1"
+                                    ? ElevatedButton(
+                                        onPressed: () async {
+                                          Get.to(
+                                            () => DocumentScreenTest(
+                                              clientName: lead.clientName,
+                                              leadId: lead.leadId,
+                                              clientId: lead.clientId,
+                                              userName: name,
+                                            ),
+                                          );
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              AppConstant.whiteBackColor,
+                                          shadowColor:
+                                              Colors.black, // 🔥 Black shadow
+                                          elevation: 1, // shadow की depth
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              5,
+                                            ),
                                           ),
                                         ),
-                                        SizedBox(width: 5),
-                                        Icon(
-                                          Icons.add,
-                                          size: 18,
-                                          color: AppConstant.iconColor,
+                                        child: Center(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                'Select doc',
+                                                style: TextStyle(
+                                                  color: AppConstant.iconColor,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 5),
+                                              Icon(
+                                                Icons.file_copy_outlined,
+                                                color: AppConstant.iconColor,
+                                                size: 18,
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                )
+                                      )
+                                    : ElevatedButton(
+                                        onPressed: () {
+                                          // _launchInBrowser('https://fms.bizipac.com/apinew/secureapi/icici_pre_paid_card_gen.php?user_id=$user_id&branch_id=$branchId#!/');
+                                          _launchInBrowser(
+                                            'https://fms.bizipac.com/apinew/dynamic_form/executive_add_form.php?user_id=$user_id&lead_id=${lead.leadId}#!/',
+                                          );
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              AppConstant.whiteBackColor,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              5,
+                                            ),
+                                          ),
+                                        ),
+                                        child: Center(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                'Add Details',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: AppConstant.darkButton,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'impact',
+                                                ),
+                                              ),
+                                              SizedBox(width: 5),
+                                              Icon(
+                                                Icons.add,
+                                                size: 15,
+                                                color: AppConstant.iconColor,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )
                               : lead.clientId == "38"
                               ? ElevatedButton(
                                   onPressed: () async {
@@ -927,14 +1076,14 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                           'Open Client App',
                                           style: TextStyle(
                                             color: AppConstant.iconColor,
-                                            fontSize: 15,
+                                            fontSize: 14,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                         SizedBox(width: 5),
                                         Icon(
                                           Icons.app_shortcut,
-                                          size: 18,
+                                          size: 15,
                                           color: AppConstant.iconColor,
                                         ),
                                       ],
@@ -1027,14 +1176,14 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                           'Open Client App',
                                           style: TextStyle(
                                             color: AppConstant.darkButton,
-                                            fontSize: 15,
+                                            fontSize: 14,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                         SizedBox(width: 5),
                                         Icon(
                                           Icons.food_bank_rounded,
-                                          size: 18,
+                                          size: 15,
                                           color: AppConstant.iconColor,
                                         ),
                                       ],
@@ -1126,7 +1275,7 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                           'Open ICICI App',
                                           style: TextStyle(
                                             color: AppConstant.darkButton,
-                                            fontSize: 15,
+                                            fontSize: 14,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -1170,14 +1319,14 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                           'Select Doc',
                                           style: TextStyle(
                                             color: AppConstant.darkButton,
-                                            fontSize: 15,
+                                            fontSize: 14,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                         SizedBox(width: 5),
                                         Icon(
                                           Icons.file_copy_outlined,
-                                          size: 18,
+                                          size: 15,
                                           color: AppConstant.iconColor,
                                         ),
                                       ],
@@ -1213,17 +1362,17 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                          'Field Invest',
+                                          'CPV',
                                           style: TextStyle(
                                             color: AppConstant.darkButton,
-                                            fontSize: 15,
+                                            fontSize: 14,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                         SizedBox(width: 5),
                                         Icon(
                                           Icons.person_outline_outlined,
-                                          size: 18,
+                                          size: 15,
                                           color: AppConstant.iconColor,
                                         ),
                                       ],
@@ -1258,10 +1407,10 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                          'Field Invest',
+                                          'CPV',
                                           style: TextStyle(
                                             color: AppConstant.darkButton,
-                                            fontSize: 15,
+                                            fontSize: 14,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -1269,7 +1418,7 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                         Icon(
                                           Icons.person_outline_outlined,
                                           color: AppConstant.iconColor,
-                                          size: 18,
+                                          size: 15,
                                         ),
                                       ],
                                     ),
@@ -1346,6 +1495,7 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                             ),
                           )
                         : SizedBox.shrink(),
+
                     (lead.client_mobile_app == "2" && lead.fiData == 1) ||
                             (lead.client_mobile_app == '1' &&
                                 lead.clientId == "89") ||
@@ -1515,7 +1665,7 @@ Widget _infoRow(String label, String value, {int maxLines = 2}) {
           child: Text(
             "$label: ",
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 12,
               color: AppConstant.darkButton,
               fontWeight: FontWeight.bold,
             ),
@@ -1528,7 +1678,7 @@ Widget _infoRow(String label, String value, {int maxLines = 2}) {
             overflow: TextOverflow.ellipsis,
             softWrap: true,
             style: const TextStyle(
-              fontSize: 13,
+              fontSize: 12,
               color: AppConstant.appTextColor,
             ),
           ),

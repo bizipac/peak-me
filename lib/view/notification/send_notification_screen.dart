@@ -2,9 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:peckme/controller/chart_controller/chart_user_controller.dart';
+import 'package:peckme/model/charts/chart_user_model.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../services/get_server_key.dart';
 import '../../utils/app_constant.dart';
@@ -30,6 +35,9 @@ class _SendMessageScreenState extends State<SendMessageScreen> {
 
   final titleController = TextEditingController();
   final bodyController = TextEditingController();
+  final GetAllUserChart getAllUserChart = Get.put(GetAllUserChart());
+
+  int _selectedIndex = 0; // 🔹 For bottom navigation
 
   @override
   void initState() {
@@ -127,7 +135,6 @@ class _SendMessageScreenState extends State<SendMessageScreen> {
       final image = await ImagePicker().pickImage(source: source);
       if (image == null) return null;
       File? img = File(image.path);
-      // // Wait for cropped image from CustomCropScreen
       return img;
     } catch (e) {
       print("❌ Error: $e");
@@ -139,12 +146,21 @@ class _SendMessageScreenState extends State<SendMessageScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: AppConstant.appBarColor,
         title: Text(
           "Send Message",
           style: TextStyle(color: AppConstant.whiteBackColor),
         ),
         iconTheme: IconThemeData(color: AppConstant.whiteBackColor),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(Icons.logout_outlined),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -349,6 +365,104 @@ class _SendMessageScreenState extends State<SendMessageScreen> {
                     ),
                   ),
                 ),
+              ),
+
+              // 🔹 Chart Section
+              Column(
+                children: [
+                  Obx(() {
+                    final monthlyData = getAllUserChart.monthlyUserData;
+                    if (monthlyData.isEmpty) {
+                      return Container(
+                        child: Center(child: CupertinoActivityIndicator()),
+                      );
+                    } else {
+                      // Calculate total value for center text
+                      final totalUsers = monthlyData.fold<int>(
+                        0,
+                        (sum, item) => sum + item.value.toInt(),
+                      );
+
+                      return SizedBox(
+                        height: Get.height / 2,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            SfCircularChart(
+                              legend: Legend(
+                                isVisible: true,
+                                overflowMode: LegendItemOverflowMode.wrap,
+                                position: LegendPosition.bottom,
+                              ),
+                              tooltipBehavior: TooltipBehavior(enable: true),
+                              palette: <Color>[
+                                Color(0xFF1976D2), // Blue
+                                Color(0xFFFF9800), // Orange
+                                Color(0xFF4CAF50), // Green
+                                Color(0xFFE91E63), // Pink
+                                Color(0xFF9C27B0), // Purple
+                                Color(0xFFFF5722), // Deep Orange
+                                Color(0xFF009688), // Teal
+                                Color(0xFF607D8B), // Blue Grey
+                              ],
+                              series: <DoughnutSeries<ChartData, String>>[
+                                DoughnutSeries<ChartData, String>(
+                                  dataSource: monthlyData,
+                                  xValueMapper: (ChartData data, _) =>
+                                      data.month,
+                                  yValueMapper: (ChartData data, _) =>
+                                      data.value,
+                                  dataLabelMapper: (ChartData data, _) =>
+                                      '${data.month}: ${data.value}',
+                                  dataLabelSettings: DataLabelSettings(
+                                    isVisible: true,
+                                    labelPosition:
+                                        ChartDataLabelPosition.outside,
+                                    connectorLineSettings:
+                                        ConnectorLineSettings(
+                                          type: ConnectorType.curve,
+                                        ),
+                                  ),
+                                  explode: true,
+                                  explodeIndex: 0,
+                                  innerRadius: '65%',
+                                  // 👈 hole in center
+                                  animationDuration: 1500,
+                                  startAngle: 90,
+                                  endAngle: 450,
+                                ),
+                              ],
+                            ),
+
+                            // 👇 Center Text inside Doughnut
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Total Users",
+                                  style: TextStyle(
+                                    color: Colors.grey[700],
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  totalUsers.toString(),
+                                  style: TextStyle(
+                                    color: AppConstant.appBarColor,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  }),
+                ],
               ),
             ],
           ),

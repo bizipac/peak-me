@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:peckme/view/widget/terms_conditions_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../services/update_auth_id.dart';
 import '../utils/app_constant.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -17,6 +19,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String authId = '';
   late String? profile = '';
 
+  //late String? company_name = '';
+
   //String address = '';
 
   void loadUserData() async {
@@ -27,6 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       uid = prefs.getString('uid') ?? '';
       rolename = prefs.getString('rolename') ?? '';
       branchName = prefs.getString('branch_name') ?? '';
+      company_name = prefs.getString('company_name') ?? '';
       authId = prefs.getString('authId') ?? '';
       profile = prefs.getString('image') ?? '';
       address = prefs.getString('address') ?? '';
@@ -40,6 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     loadUserData();
     print("-----");
     print(profile);
+    print(company_name);
   }
 
   String formatRoleName(String text) {
@@ -61,13 +67,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late String? name = '';
 
   late String? mobile = '';
+  late String? company_name = '';
 
   late String? rolename = '';
 
   final String company = '';
 
   final String subCompany =
-      "Cargo & Courier\nFulfillment Services\n(Franchisee of Bizipac Couriers Pvt Ltd)";
+      "Fulfillment Services\n(Franchisee of Bizipac Couriers Pvt Ltd)";
 
   late String? address = '';
 
@@ -84,7 +91,68 @@ class _ProfileScreenState extends State<ProfileScreen> {
         iconTheme: IconThemeData(color: AppConstant.appBarWhiteColor),
         actions: [
           Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.all(5.0),
+            child: IconButton(
+              icon: const Icon(Icons.refresh_outlined),
+              onPressed: () async {
+                try {
+                  final snapshot = await FirebaseFirestore.instance
+                      .collection("auth_id_status")
+                      .get();
+                  if (snapshot.docs.isEmpty) {
+                    print("No documents found in auth_id_status");
+                  }
+                  // Loop through each document
+                  for (var doc in snapshot.docs) {
+                    final data = doc.data() as Map<String, dynamic>;
+
+                    // Safely access 'status'
+                    final status = data['status'] ?? "No status field";
+                    print("------------------------------------------");
+                    print("Status: $status");
+                    print("-------------------------------------------");
+                    if (status == "active") {
+                      await updateAuthId(
+                        uid!,
+                        onUpdated: (newAuthId) {
+                          setState(() {
+                            authId = newAuthId; // ✅ Local UI state update
+                          });
+                        },
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            "Letest Auth/Ban ID : $authId updated.!!",
+                          ),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    } else if (status == "inactive") {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Something went wrong."),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Working mode enabled"),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+                    }
+                  }
+                } catch (e) {
+                  print("Error : $e");
+                }
+              },
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.all(5.0),
             child: IconButton(
               icon: const Icon(Icons.info_outline),
               onPressed: () {
@@ -125,7 +193,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Column(
                     children: [
                       Text(
-                        formatRoleName(rolename!).toUpperCase(),
+                        company_name!,
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -147,7 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
 
                 // 👤 Profile Image (square like ID card)
-                SizedBox(height: 15),
+                SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
@@ -156,13 +224,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     decoration: BoxDecoration(
                       border: Border.all(color: AppConstant.borderColor),
                       image: DecorationImage(
-                        image: NetworkImage('$profile'),
+                        image: profile!.startsWith('http')
+                            ? NetworkImage(profile!)
+                            : AssetImage(profile!) as ImageProvider,
+                        // cast needed
                         fit: BoxFit.cover,
                       ),
                     ),
                   ),
                 ),
-
+                SizedBox(height: 20),
                 Container(
                   padding: const EdgeInsets.all(5),
                   child: Table(
@@ -233,24 +304,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ],
                       ),
-                      TableRow(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(6.0),
-                            child: Text(
-                              "Auth ID",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: AppConstant.darkButton,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(6.0),
-                            child: Text("$authId"),
-                          ),
-                        ],
-                      ),
+                      // TableRow(
+                      //   children: [
+                      //     Padding(
+                      //       padding: const EdgeInsets.all(6.0),
+                      //       child: Text(
+                      //         "Auth ID",
+                      //         style: TextStyle(
+                      //           fontWeight: FontWeight.bold,
+                      //           color: AppConstant.darkButton,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //     Padding(
+                      //       padding: const EdgeInsets.all(6.0),
+                      //       child: Text(
+                      //         authId.length > 6
+                      //             ? "XXX${authId.substring(authId.length - 6)}"
+                      //             : authId,
+                      //         style: TextStyle(fontWeight: FontWeight.bold),
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
                       TableRow(
                         children: [
                           Padding(

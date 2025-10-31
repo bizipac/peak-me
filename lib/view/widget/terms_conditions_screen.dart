@@ -72,7 +72,6 @@ class TermsAndConditionsScreen extends StatelessWidget {
               "You may not misuse the app or attempt to gain unauthorized access to its systems.",
             ),
             SizedBox(height: 10),
-
             Text(
               "3. Data & Privacy",
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -113,10 +112,45 @@ class TermsAndConditionsScreen extends StatelessWidget {
 
             Divider(),
             Center(
-              child: Text(
-                "© 2025 Peak Me. All rights reserved.\nAuthorized by Google as an Open App.",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: Colors.grey),
+              child: Column(
+                children: [
+                  Text(
+                    "© 2025 Peak Me. All rights reserved.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    "Company Name: Bizipac Couriers Pvt. Ltd.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    "Address: 337, Omkar Apartments, Shradhanand Road, Vile Parle East, Mumbai-400057, Maharashtra, India",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                  SizedBox(height: 2),
+
+                  Text(
+                    "Developed by: Shubham Gupta",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                  Text(
+                    "Email: info@teamunited.net",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                  SizedBox(height: 2),
+                  SizedBox(height: 4),
+                  Text(
+                    "Authorized by Google as an Open App.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                ],
               ),
             ),
           ],

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -13,6 +14,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../controller/receivedLead_controller.dart';
 import '../model/new_lead_model.dart';
 import '../services/ExotelService.dart';
+import '../services/getCurrentLocation.dart';
 import '../utils/app_constant.dart';
 import 'lead_detail_screen.dart';
 
@@ -28,7 +30,8 @@ class _ReceivedLeadScreenState extends State<ReceivedLeadScreen> {
       ReceivedLeadController();
 
   // Future holding current list source (either full list or filtered result)
-  late Future<List<Lead>> leads;
+  //late Future<List<Lead>> leads;
+  late Future<List<Lead>> leads = Future.value([]);
 
   // For user/session values
   String uid = '';
@@ -70,7 +73,7 @@ class _ReceivedLeadScreenState extends State<ReceivedLeadScreen> {
     return receivedLeadController.fetchLeads(
       uid: uid,
       start: 0,
-      end: 10,
+      end: 2000,
       branchId: branchId,
       app_version: appVersion,
       appType: appType,
@@ -223,10 +226,28 @@ class _ReceivedLeadScreenState extends State<ReceivedLeadScreen> {
     }
   }
 
+  String location_lat = '';
+  String location_long = '';
+
+  void _getLocation() async {
+    try {
+      Position position = await getCurrentLocation();
+      setState(() {
+        location_lat = '${position.latitude}';
+        location_long = '${position.longitude}';
+      });
+    } catch (e) {
+      setState(() {
+        location_lat = 'Error: ${e.toString()}';
+        location_long = 'Error: ${e.toString()}';
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-
+    _getLocation();
     // load user data and then fetch initial leads
     loadUserData().then((_) {
       setState(() {
@@ -278,7 +299,7 @@ class _ReceivedLeadScreenState extends State<ReceivedLeadScreen> {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             // update visible total
             total = '0';
-            return const Center(child: Text('No leads found.'));
+            return const Center(child: Text('No leads available...'));
           } else {
             final leadsList = snapshot.data!;
             // update visible total only when changed (avoids re-build loops)
@@ -433,8 +454,10 @@ class _ReceivedLeadScreenState extends State<ReceivedLeadScreen> {
                                       style: TextStyle(fontSize: 12),
                                     ),
                                   ),
-                                  const Text(
-                                    "N/A",
+                                  Text(
+                                    lead.pincode ?? '',
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
                                     style: TextStyle(
                                       color: Colors.grey,
                                       fontSize: 10,
@@ -479,23 +502,41 @@ class _ReceivedLeadScreenState extends State<ReceivedLeadScreen> {
                                     child: InkWell(
                                       onTap: () async {
                                         try {
+                                          final location =
+                                              lead.location?.trim() ?? '';
+                                          print("Location: $location");
+
+                                          final offPin =
+                                              lead.offPincode?.trim() ?? '';
                                           final resAddress =
-                                              lead.resAddress?.trim() ?? '';
+                                              '${lead.resAddress?.trim() ?? ''} ${lead.pincode?.trim() ?? ''}'
+                                                  .trim();
+
                                           final offName =
                                               lead.offName?.trim() ?? '';
                                           final offAddress =
                                               lead.offAddress?.trim() ?? '';
-                                          final full_address =
-                                              [offName, offAddress]
+                                          final offFullAddress =
+                                              [offName, offAddress, offPin]
                                                   .where((s) => s.isNotEmpty)
                                                   .join(', ');
 
-                                          print('Res Address: $resAddress');
-                                          print('Full Address: $full_address');
-
+                                          // Convert lat/lng to double safely
+                                          final double fromLat =
+                                              double.tryParse(
+                                                location_lat.toString(),
+                                              ) ??
+                                              0.0;
+                                          final double fromLng =
+                                              double.tryParse(
+                                                location_long.toString(),
+                                              ) ??
+                                              0.0;
+                                          print("----------------");
+                                          print(fromLng);
+                                          print(fromLat);
                                           if (resAddress.isEmpty &&
-                                              full_address.isEmpty) {
-                                            // Both addresses missing
+                                              offFullAddress.isEmpty) {
                                             ScaffoldMessenger.of(
                                               context,
                                             ).showSnackBar(
@@ -507,60 +548,143 @@ class _ReceivedLeadScreenState extends State<ReceivedLeadScreen> {
                                             );
                                             return;
                                           }
-
-                                          List<Location> locationsRes = [];
-                                          List<Location> locationsOffice = [];
-
-                                          // get coordinates only if address is non-empty
-                                          if (resAddress.isNotEmpty) {
-                                            try {
-                                              locationsRes =
-                                                  await locationFromAddress(
-                                                    resAddress,
-                                                  );
-                                            } catch (e) {
-                                              print(
-                                                'Error getting resAddress location: $e',
-                                              );
-                                            }
-                                          }
-
-                                          if (full_address.isNotEmpty) {
-                                            try {
-                                              locationsOffice =
-                                                  await locationFromAddress(
-                                                    full_address,
-                                                  );
-                                            } catch (e) {
-                                              print(
-                                                'Error getting full_address location: $e',
-                                              );
-                                            }
-                                          }
-
-                                          // Decide which coordinates to use
-                                          if (locationsRes.isNotEmpty &&
-                                              locationsOffice.isNotEmpty) {
-                                            await openMap(
-                                              fromLat: locationsRes[0].latitude,
-                                              fromLng:
-                                                  locationsRes[0].longitude,
-                                              toLat:
-                                                  locationsOffice[0].latitude,
-                                              toLng:
-                                                  locationsOffice[0].longitude,
+                                          if (location.toLowerCase() ==
+                                              "office") {
+                                            List<Location> locationsOffice = [];
+                                            print(
+                                              "Getting office address location...",
                                             );
-                                          } else if (locationsRes.isNotEmpty) {
-                                            // Only resAddress available
+                                            print(
+                                              "Office Address: $offFullAddress",
+                                            );
+
+                                            if (offFullAddress.isNotEmpty) {
+                                              try {
+                                                locationsOffice =
+                                                    await locationFromAddress(
+                                                      offFullAddress,
+                                                    );
+                                              } catch (e) {
+                                                print(
+                                                  'Error getting office location: $e',
+                                                );
+                                              }
+                                            }
+
+                                            if (locationsOffice.isNotEmpty) {
+                                              print("----------------");
+                                              print(fromLng);
+                                              print(fromLat);
+                                              print(
+                                                locationsOffice.first.latitude,
+                                              );
+                                              print(
+                                                locationsOffice.first.longitude,
+                                              );
+                                              await openMap(
+                                                fromLat: fromLat,
+                                                fromLng: fromLng,
+                                                toLat: locationsOffice
+                                                    .first
+                                                    .latitude,
+                                                toLng: locationsOffice
+                                                    .first
+                                                    .longitude,
+                                              );
+                                            } else {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                    "Office address not found on map.",
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          } else if (location.toLowerCase() ==
+                                              "residence") {
+                                            List<Location> locationsRes = [];
+                                            print(
+                                              "Getting residence address location...",
+                                            );
+                                            print(
+                                              "Residence Address: $resAddress",
+                                            );
+
+                                            if (resAddress.isNotEmpty) {
+                                              try {
+                                                locationsRes =
+                                                    await locationFromAddress(
+                                                      resAddress,
+                                                    );
+                                              } catch (e) {
+                                                print(
+                                                  'Error getting residence location: $e',
+                                                );
+                                              }
+                                            }
+
+                                            if (locationsRes.isNotEmpty) {
+                                              print("----------------");
+                                              print(fromLng);
+                                              print(fromLat);
+                                              print(
+                                                locationsRes.first.latitude,
+                                              );
+                                              print(
+                                                locationsRes.first.longitude,
+                                              );
+                                              await openMap(
+                                                fromLat: fromLat,
+                                                fromLng: fromLng,
+                                                toLat:
+                                                    locationsRes.first.latitude,
+                                                toLng: locationsRes
+                                                    .first
+                                                    .longitude,
+                                              );
+                                            } else {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                    "Residence address not found on map.",
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          } else if (location.isEmpty) {
+                                            // Default case: open map from and to same point
+                                            List<Location> locationsRes = [];
+                                            print(
+                                              "Getting residence address location...",
+                                            );
+                                            print(
+                                              "Residence Address: $resAddress",
+                                            );
+                                            if (resAddress.isNotEmpty) {
+                                              try {
+                                                locationsRes =
+                                                    await locationFromAddress(
+                                                      resAddress,
+                                                    );
+                                              } catch (e) {
+                                                print(
+                                                  'Error getting residence location: $e',
+                                                );
+                                              }
+                                            }
                                             await openMap(
-                                              fromLat: locationsRes[0].latitude,
-                                              fromLng:
-                                                  locationsRes[0].longitude,
-                                              toLat: locationsRes[0].latitude,
-                                              toLng: locationsRes[0].longitude,
+                                              fromLat: fromLat,
+                                              fromLng: fromLng,
+                                              toLat:
+                                                  locationsRes.first.latitude,
+                                              toLng:
+                                                  locationsRes.first.longitude,
                                             );
                                           } else {
-                                            // Neither worked
                                             ScaffoldMessenger.of(
                                               context,
                                             ).showSnackBar(
