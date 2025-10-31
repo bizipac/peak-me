@@ -58,10 +58,7 @@
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-         <activity
-            android:name="com.bcpl.icici.IciciActivity"
-            android:exported="true"
-            android:theme="@style/Theme.AppCompat" />
+         
         
         <!--        <activity android:name=".IciciPrePaidCardActivity" />-->
         <!-- Don't delete the meta-data below.
@@ -94,4 +91,5 @@
         </intent>
     </queries>
 </manifest>
+
 
