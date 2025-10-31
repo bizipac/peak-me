@@ -1,10 +1,12 @@
 import 'dart:convert';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:http/http.dart' as http;
+
 import '../model/otp_res_model.dart';
 
 class OtpService {
-  static const String apiUrl = 'https://fms.bizipac.com/ws/userverification.php?';
+  static const String apiUrl =
+      'https://fms.bizipac.com/apinew/ws_new/userverification.php?';
 
   static Future<OtpResponse> getOtp({
     required String mobile,
@@ -13,14 +15,10 @@ class OtpService {
     try {
       final response = await http.post(
         Uri.parse(apiUrl),
-        body: {
-          'mobile': mobile,
-          'password': upassword,
+        body: {'mobile': mobile, 'password': upassword},
+        headers: <String, String>{
+          "Access-Control-Allow-Origin": "*", //specify the context type as Json
         },
-          headers: <String, String>{
-            "Access-Control-Allow-Origin":
-            "*", //specify the context type as Json
-          }
       );
 
       if (response.statusCode == 200) {
@@ -28,7 +26,6 @@ class OtpService {
 
         print("Suucess");
         return OtpResponse.fromJson(jsonData);
-
       } else {
         return OtpResponse(success: 0, message: 'Server Error');
       }

@@ -28,7 +28,7 @@ class ReceivedLeadController {
       final decoded = jsonDecode(response.body);
 
       if (decoded['success'] == 1) {
-        List<dynamic> leads = decoded['data'];
+        late List<dynamic> leads = decoded['data'];
 
         for (var lead in leads) {
           // Decrypt fields
