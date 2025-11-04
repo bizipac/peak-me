@@ -74,7 +74,7 @@ class _RefixLeadScreenState extends State<RefixLeadScreen> {
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
-      lastDate: DateTime(2050),
+      lastDate: DateTime.now().add(Duration(days: 2)),
     );
 
     if (datePickerd != null) {

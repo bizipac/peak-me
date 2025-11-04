@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../utils/app_constant.dart';
 
@@ -59,6 +60,16 @@ class _GetNotificationScreenState extends State<GetNotificationScreen> {
     }
   }
 
+  // 🌐 Open URL in browser (Chrome/default)
+  Future<void> _openUrl(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      debugPrint("Could not launch $url");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (mobile.isEmpty) {
@@ -104,7 +115,8 @@ class _GetNotificationScreenState extends State<GetNotificationScreen> {
               final doc = docs[index];
               final data = doc.data();
               bool isUnread = data['status'] == 'unread';
-
+              final String? url = data['url'];
+              final bool hasUrl = url != null && url.isNotEmpty;
               return Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -138,6 +150,26 @@ class _GetNotificationScreenState extends State<GetNotificationScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(data['body'] ?? ''),
+                      if (hasUrl)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6),
+                          child: Row(
+                            // 👈 shifts button to right
+                            children: [
+                              TextButton.icon(
+                                onPressed: () => _openUrl(url),
+                                icon: const Icon(Icons.open_in_new, size: 16),
+                                label: const Text('Open'),
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: const Size(40, 30),
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       const SizedBox(height: 4),
                       Text(
                         data['sentTime'] != null
@@ -150,7 +182,6 @@ class _GetNotificationScreenState extends State<GetNotificationScreen> {
                   trailing: isUnread
                       ? const Icon(Icons.circle, color: Colors.red, size: 12)
                       : null,
-                  // 🔹 Delete button removed
                   onTap: () async {
                     if (isUnread) {
                       await doc.reference.update({'status': 'read'});
