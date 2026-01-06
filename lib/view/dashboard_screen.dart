@@ -199,7 +199,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       });
     }
   }
-
+//close dialog
   void _closeDialogIfOpen() {
     if (_isDialogShowing && Navigator.canPop(context)) {
       Navigator.of(context).pop(); // close dialog
@@ -1239,4 +1239,5 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 }
+
 
