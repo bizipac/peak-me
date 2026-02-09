@@ -15,6 +15,9 @@ class Lead {
   final String amzAppId;
   final String clientId;
 
+  // 👇 AI field
+  String aiPriority = "NORMAL"; // HIGH / NORMAL / LOW
+
   Lead({
     required this.customerName,
     required this.mobile,

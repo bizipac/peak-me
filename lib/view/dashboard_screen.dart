@@ -25,6 +25,7 @@ import '../controller/dashboard_counts_controller.dart';
 import '../controller/lead_status_services.dart';
 import '../model/dashboard_response_model.dart';
 import '../services/get_server_key.dart';
+import '../services/update_auth_id.dart';
 import '../utils/app_constant.dart';
 import 'auth/login.dart';
 
@@ -184,7 +185,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   } else if (Platform.isIOS) {
                     exit(
                       0,
-                    ); 
+                    ); // iOS में यह Apple guideline के खिलाफ है, लेकिन काम करेगा
                   } else {
                     exit(0); // fallback
                   }
@@ -199,7 +200,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       });
     }
   }
-//close dialog
+
   void _closeDialogIfOpen() {
     if (_isDialogShowing && Navigator.canPop(context)) {
       Navigator.of(context).pop(); // close dialog
@@ -241,6 +242,64 @@ class _DashboardScreenState extends State<DashboardScreen> {
           style: TextStyle(color: AppConstant.appBarWhiteColor),
         ),
         actions: [
+          Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: IconButton(
+              icon: const Icon(Icons.refresh_outlined, color: Colors.white),
+              onPressed: () async {
+                try {
+                  final snapshot = await FirebaseFirestore.instance
+                      .collection("auth_id_status")
+                      .get();
+                  if (snapshot.docs.isEmpty) {
+                    print("No documents found in auth_id_status");
+                  }
+                  // Loop through each document
+                  for (var doc in snapshot.docs) {
+                    final data = doc.data() as Map<String, dynamic>;
+
+                    // Safely access 'status'
+                    final status = data['status'] ?? "No status field";
+                    print("------------------------------------------");
+                    print("Status: $status");
+                    print("-------------------------------------------");
+                    if (status == "active") {
+                      await updateAuthId(
+                        uid!,
+                        onUpdated: (newAuthId) {
+                          setState(() {
+                            authId = newAuthId; // ✅ Local UI state update
+                          });
+                        },
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Letest Ban ID : $authId updated.!!"),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    } else if (status == "inactive") {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Something went wrong."),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Working mode enabled"),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+                    }
+                  }
+                } catch (e) {
+                  print("Error : $e");
+                }
+              },
+            ),
+          ),
           mobile.isEmpty
               ? IconButton(
                   onPressed: null,
@@ -351,6 +410,106 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     IconButton(
                       onPressed: () async {
                         Navigator.pop(context);
+                      },
+                      onLongPress: () async {
+                        // 1️⃣ Fetch server key first
+                        GetServerKey getServerKey = GetServerKey();
+                        String? serverKey = await getServerKey
+                            .getServerKeyToken();
+                        print("----------------------");
+                        print(serverKey);
+                        print("------------------------");
+
+                        // 2️⃣ Show password dialog
+                        TextEditingController _passwordController =
+                            TextEditingController();
+                        bool passwordCorrect = false;
+
+                        await showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          // user must tap OK or Cancel
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text("Enter Password"),
+                              content: TextField(
+                                controller: _passwordController,
+                                obscureText: true,
+                                decoration: InputDecoration(
+                                  hintText: "Password",
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(
+                                      context,
+                                    ).pop(); // Cancel pressed
+                                  },
+                                  child: Text("Cancel"),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    try {
+                                      final snapshot = await FirebaseFirestore
+                                          .instance
+                                          .collection("admin")
+                                          .get();
+                                      if (snapshot.docs.isEmpty) {
+                                        print(
+                                          "No documents found in auth_id_status",
+                                        );
+                                      }
+                                      // Loop through each document
+                                      for (var doc in snapshot.docs) {
+                                        final data = doc.data();
+
+                                        // Safely access 'status'
+                                        final status =
+                                            data['login_auth'] ??
+                                            "No status field";
+                                        if (_passwordController.text.trim() ==
+                                            status) {
+                                          passwordCorrect = true;
+                                          Navigator.of(context).pop();
+                                        } else {
+                                          // Optional: show error
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                "Incorrect password",
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text("Welcome"),
+                                            duration: Duration(seconds: 2),
+                                          ),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      print("Error : $e");
+                                    }
+                                  },
+                                  child: Text("OK"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+
+                        // 3️⃣ Navigate only if password correct
+                        if (passwordCorrect) {
+                          Get.to(
+                            () => SendMessageScreen(serverKeys: serverKey),
+                          );
+                        }
                       },
                       icon: Text(
                         'No',
@@ -1239,5 +1398,3 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 }
-
-

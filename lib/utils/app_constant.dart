@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AppConstant {
   static String appMainName = 'Peak Me';
   static String appPowerBy = 'Created By Shubham';
-  static String appVersion = 'v1.0.3';
+  static String appVersion = 'v1.0.4';
   static const appMainColor = Colors.orange;
   static final appInsideColor = Color(0xff0f5f5dc);
   static const appSnackBarBackground = Colors.white;

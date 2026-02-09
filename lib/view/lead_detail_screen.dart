@@ -157,11 +157,11 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
   }) async {
     try {
       final result = await platform.invokeMethod<String>('callNativeMethod', {
-        "client_id": clientId, // You can change this dynamically
-        "lead_id": leadId, // You can change this dynamically
-        "sessionId": sessionId, // You can change this dynamically
+        "client_id": clientId,
+        "lead_id": leadId,
+        "sessionId": sessionId,
         "amzAppID": amzAppID,
-        "customerName": customerName, // You can change this dynamically
+        "customerName": customerName,
         "user_id": user_id,
         "branch_id": branch_id,
         "auth_id": auth_id,
@@ -508,18 +508,8 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                                         Navigator.pop(context),
                                                   ),
                                                 ),
-                                                if (lead.empName != null &&
-                                                    lead.empName!.isNotEmpty)
-                                                  _infoRow(
-                                                    "Emp Name",
-                                                    lead.empName,
-                                                  ),
-                                                if (lead.clientName != null &&
-                                                    lead.clientName!.isNotEmpty)
-                                                  _infoRow(
-                                                    "Client Name",
-                                                    lead.clientName,
-                                                  ),
+
+                                                //----------------------
                                                 if (lead.product != null &&
                                                     lead.product!.isNotEmpty)
                                                   _infoRow(
@@ -538,6 +528,18 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                                     "App Location",
                                                     lead.appLoc,
                                                   ),
+                                                if (lead.empName != null &&
+                                                    lead.empName!.isNotEmpty)
+                                                  _infoRow(
+                                                    "Corp Name",
+                                                    lead.empName,
+                                                  ),
+                                                if (lead.compId != null &&
+                                                    lead.compId!.isNotEmpty)
+                                                  _infoRow(
+                                                    "Corp Id",
+                                                    lead.compId,
+                                                  ),
                                                 if (lead.productCode != null &&
                                                     lead
                                                         .productCode!
@@ -554,6 +556,13 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                                     lead.source2,
                                                     maxLines: 5,
                                                   ),
+                                                if (lead.formNo != null &&
+                                                    lead.formNo!.isNotEmpty)
+                                                  _infoRow(
+                                                    "Card No",
+                                                    lead.formNo,
+                                                    maxLines: 5,
+                                                  ),
                                                 if (lead.source3 != null &&
                                                     lead.source3!.isNotEmpty)
                                                   _infoRow(
@@ -561,12 +570,20 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                                     lead.source3,
                                                     maxLines: 5,
                                                   ),
-                                                if (lead.formNo != null &&
-                                                    lead.formNo!.isNotEmpty)
+                                                if (lead.city != null &&
+                                                    lead.city!.isNotEmpty)
+                                                  _infoRow("City", lead.city),
+                                                if (lead.offPincode != null &&
+                                                    lead.offPincode!.isNotEmpty)
                                                   _infoRow(
-                                                    "Card No",
-                                                    lead.formNo,
-                                                    maxLines: 5,
+                                                    "Office Pin Code",
+                                                    lead.offPincode,
+                                                  ),
+                                                if (lead.clientName != null &&
+                                                    lead.clientName!.isNotEmpty)
+                                                  _infoRow(
+                                                    "Client Name",
+                                                    lead.clientName,
                                                   ),
                                                 if (lead.doc != null &&
                                                     lead.doc!.isNotEmpty)
@@ -619,15 +636,6 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                                   _infoRow(
                                                     "UPI Id",
                                                     lead.compName,
-                                                  ),
-                                                if (lead.city != null &&
-                                                    lead.city!.isNotEmpty)
-                                                  _infoRow("City", lead.city),
-                                                if (lead.offPincode != null &&
-                                                    lead.offPincode!.isNotEmpty)
-                                                  _infoRow(
-                                                    "Office Pin Code",
-                                                    lead.offPincode,
                                                   ),
                                                 if (lead.resPin != null &&
                                                     lead.resPin!.isNotEmpty)
@@ -1034,7 +1042,7 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                     } else {
                                       Get.snackbar(
                                         "Message",
-                                        "Your auth_id expire please contact to head office!",
+                                        "Your Ban Id expire please contact to head office!",
                                         icon: Image.asset(
                                           "assets/logo/cmp_logo.png",
                                           height: 30,
@@ -1135,7 +1143,7 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                     } else {
                                       Get.snackbar(
                                         "Message",
-                                        "Your auth_id expire please contact head office!",
+                                        "Your Ban Id expire please contact head office!",
                                         icon: Image.asset(
                                           "assets/logo/cmp_logo.png",
                                           height: 30,
@@ -1234,7 +1242,7 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                                     } else {
                                       Get.snackbar(
                                         "Message",
-                                        "Your auth_id expire please contact head office!",
+                                        "Your Ban Id expire please contact head office!",
                                         icon: Image.asset(
                                           "assets/logo/cmp_logo.png",
                                           height: 30,
@@ -1495,7 +1503,6 @@ class _LeadDetailScreenState extends State<LeadDetailScreen> {
                             ),
                           )
                         : SizedBox.shrink(),
-
                     (lead.client_mobile_app == "2" && lead.fiData == 1) ||
                             (lead.client_mobile_app == '1' &&
                                 lead.clientId == "89") ||

@@ -256,6 +256,41 @@ class _ReceivedLeadScreenState extends State<ReceivedLeadScreen> {
     });
   }
 
+  String calculateAiPriority(Lead lead) {
+    // 1️⃣ Invalid / blank date → LOW
+    if (lead.leadDate == "0000-00-00" || lead.leadDate.isEmpty) {
+      return "LOW";
+    }
+
+    DateTime today = DateTime.now();
+    DateTime leadDate = DateTime.tryParse(lead.leadDate) ?? DateTime(2000);
+
+    int daysDiff = today.difference(leadDate).inDays.abs();
+
+    // 2️⃣ HIGH PRIORITY CONDITIONS
+    if (
+    // Recent lead (today or yesterday)
+    daysDiff <= 1 &&
+        // Appointment time available
+        lead.apptime.isNotEmpty &&
+        // Location available
+        (lead.location.toLowerCase() == "office" ||
+            lead.location.toLowerCase() == "residence") &&
+        // Important client
+        (lead.clientname.toUpperCase().contains("ICICI") ||
+            lead.clientname.toUpperCase().contains("BANK"))) {
+      return "HIGH";
+    }
+
+    // 3️⃣ MEDIUM / NORMAL
+    if (daysDiff <= 3) {
+      return "NORMAL";
+    }
+
+    // 4️⃣ OLD lead
+    return "LOW";
+  }
+
   String _sortOrder = "Oldest First";
 
   @override
@@ -304,6 +339,18 @@ class _ReceivedLeadScreenState extends State<ReceivedLeadScreen> {
             final leadsList = snapshot.data!;
             // update visible total only when changed (avoids re-build loops)
             // 🔹 sort by date (oldest first)
+            //AI-Start
+            for (var lead in leadsList) {
+              lead.aiPriority = calculateAiPriority(lead);
+            }
+            leadsList.sort((a, b) {
+              const priorityOrder = {"HIGH": 1, "NORMAL": 2, "LOW": 3};
+
+              return priorityOrder[a.aiPriority]!.compareTo(
+                priorityOrder[b.aiPriority]!,
+              );
+            });
+            //AI-End
 
             leadsList.sort((a, b) {
               final dateA =
@@ -406,6 +453,28 @@ class _ReceivedLeadScreenState extends State<ReceivedLeadScreen> {
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
                             children: [
+                              // Container(
+                              //   padding: const EdgeInsets.symmetric(
+                              //     horizontal: 8,
+                              //     vertical: 4,
+                              //   ),
+                              //   decoration: BoxDecoration(
+                              //     color: lead.aiPriority == "HIGH"
+                              //         ? Colors.red
+                              //         : lead.aiPriority == "NORMAL"
+                              //         ? Colors.orange
+                              //         : Colors.grey,
+                              //     borderRadius: BorderRadius.circular(6),
+                              //   ),
+                              //   child: Text(
+                              //     "AI: ${lead.aiPriority}",
+                              //     style: const TextStyle(
+                              //       color: Colors.white,
+                              //       fontSize: 10,
+                              //       fontWeight: FontWeight.bold,
+                              //     ),
+                              //   ),
+                              // ),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,

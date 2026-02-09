@@ -122,9 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       );
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(
-                            "Letest Auth/Ban ID : $authId updated.!!",
-                          ),
+                          content: Text("Letest Ban ID : $authId updated.!!"),
                           duration: Duration(seconds: 2),
                         ),
                       );

@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../view/widget/get_notification_screen.dart';
 
@@ -115,8 +116,8 @@ class NotificationService {
     String? mobile = await getMobile();
     if (mobile == null || mobile.isEmpty) return;
 
-    // Use consistent ID for duplicate prevention
     final msgId =
+        message.data['id'] ??
         message.messageId ??
         "${message.notification?.title}-${message.notification?.body}";
 
@@ -125,16 +126,20 @@ class NotificationService {
         .doc(mobile)
         .collection('notifications');
 
-    final existing = await ref.where('messageId', isEqualTo: msgId).get();
-    if (existing.docs.isNotEmpty) {
+    // ✅ Use doc instead of add
+    final docRef = ref.doc(msgId);
+    final docSnapshot = await docRef.get();
+
+    if (docSnapshot.exists) {
       print('🔁 Skipping duplicate notification: $msgId');
       return;
     }
 
-    await ref.add({
+    await docRef.set({
       'messageId': msgId,
       'title': message.notification?.title ?? '',
       'body': message.notification?.body ?? '',
+      'url': message.data['url'],
       'sentTime':
           message.sentTime?.toIso8601String() ??
           DateTime.now().toIso8601String(),
@@ -216,6 +221,14 @@ class NotificationService {
     RemoteMessage message,
   ) async {
     await saveNotificationToFirebase(message);
+    final url = message.data['url'];
+    if (url != null && url.isNotEmpty) {
+      final Uri uri = Uri.parse(url);
+      print(uri);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    }
     Get.to(() => GetNotificationScreen());
     //Get.to(() => DashboardScreen());
   }

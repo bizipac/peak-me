@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:path/path.dart';
+import 'package:peckme/services/notification_service.dart';
 import 'package:peckme/utils/app_constant.dart';
 import 'package:peckme/view/auth/login.dart';
 import 'package:peckme/view/dashboard_screen.dart';
@@ -29,6 +31,9 @@ void main() async {
     FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
     runApp(MyApp());
   });
+  final notificationService = NotificationService();
+  notificationService.firebaseInit(context as BuildContext);
+  notificationService.setupInteractMessage(context as BuildContext);
 }
 
 class MyApp extends StatelessWidget {
