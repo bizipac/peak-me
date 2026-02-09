@@ -67,8 +67,134 @@ IF YOU ARE FETCH THE TIME_SLOT TO HIT THIS API
 IF YOU ARE FETCH THE REASON SO CALL THIS API
 "https://fms.bizipac.com/apinew/ws_new/reason.php?leadid=$leadId"
 
+//------------------------main.dart app_version checking
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:peckme/utils/app_constant.dart';
+import 'package:peckme/view/auth/login.dart';
+import 'package:peckme/view/dashboard_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'controller/version_service.dart';
 
+@pragma('vm:entry-point')
+Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
+await Firebase.initializeApp();
+}
+
+void main() async {
+WidgetsFlutterBinding.ensureInitialized();
+await Firebase.initializeApp();
+await GetStorage.init();
+
+SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((
+_,
+) {
+FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
+runApp(MyApp());
+});
+}
+
+class MyApp extends StatelessWidget {
+const MyApp({super.key});
+
+Future<bool> isLoggedIn() async {
+final prefs = await SharedPreferences.getInstance();
+final uid = prefs.getString('uid');
+return uid != null && uid.isNotEmpty;
+}
+
+// This widget is the root of your application.
+@override
+Widget build(BuildContext context) {
+final localVersion = AppConstant.appVersion; // e.g. v1.1.2
+print("App Version (local): $localVersion");
+
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Peak Me',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      ),
+      builder: EasyLoading.init(),
+      home: FutureBuilder<String?>(
+        future: VersionService.fetchLatestVersion(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data == null) {
+            return const Center(child: Text("Unable to verify app version."));
+          }
+
+          final latestVersion = snapshot.data!;
+          print("Latest Version (server): $latestVersion");
+
+          if (localVersion != latestVersion) {
+            // 🔴 Version mismatch → Show update message
+            return Scaffold(
+              body: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.system_update,
+                        size: 80,
+                        color: Colors.red,
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        "Please download the latest version ($latestVersion)",
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () {
+                          // open Play Store link
+                          // e.g. launchUrl(Uri.parse("https://play.google.com/store/apps/details?id=com.example.app"));
+                        },
+                        child: const Text("Update Now"),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }
+
+          // ✅ Version matched → proceed to login/dashboard
+          return FutureBuilder<bool>(
+            future: isLoggedIn(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
+              }
+              if (snapshot.hasData && snapshot.data == true) {
+                return DashboardScreen();
+              } else {
+                return Login();
+              }
+            },
+          );
+        },
+      ),
+    );
+
+}
+}
+
+//---------------------------------------------------------
 
 
 

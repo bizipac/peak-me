@@ -82,6 +82,7 @@ dependencies:
   flutter_easyloading:
   google_mlkit_text_recognition: ^0.15.0
   image: ^4.0.17
+  syncfusion_flutter_charts: ^31.1.19
 
 
 dev_dependencies:
